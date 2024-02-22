@@ -1,0 +1,2 @@
+1. Error gdy zły/brak url
+2. stretch kolumn i wierszy, wrap text
