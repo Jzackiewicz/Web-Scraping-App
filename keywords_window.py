@@ -1,104 +1,81 @@
-from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+
 
 class KeyWordsEditWindow(QDialog):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
-        self.setWindowTitle("Okno Dialogowe")
-        self.setGeometry(200, 200, 200, 500)
-
-        self.keywords = self.get_keywords_from_file()
-
+        self.setWindowTitle("Edycja słów kluczowych")
+        self.setGeometry(700, 200, 200, 350)
         self.keywords_list = KeywordsList(self)
-        self.keywords_table = KeywordsTable(self)
 
-        cancel_button = QPushButton("Anuluj")
-        cancel_button.clicked.connect(self.reject)
+        self.cancel_button = QPushButton("Anuluj")
+        self.cancel_button.clicked.connect(self.reject)
 
-        save_button = QPushButton("Zapisz")
-        save_button.clicked.connect(lambda _: print("ddd"))
+        self.save_button = QPushButton("Zapisz")
+        self.save_button.clicked.connect(self.keywords_list.save_keywords)
 
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(cancel_button)
-        button_layout.addWidget(save_button)
+        self.button_layout = QHBoxLayout()
+        self.button_layout.addWidget(self.cancel_button)
+        self.button_layout.addWidget(self.save_button)
+
+        self.keyword_layout = QGridLayout()
+        self.text_box = QLineEdit()
+        self.text_add_button = QPushButton("Dodaj")
+        self.text_add_button.clicked.connect(self.keywords_list.add_keyword_to_list)
+        self.keyword_layout.addWidget(self.text_box, 0, 0, 1, 3)
+        self.keyword_layout.addWidget(self.text_add_button, 0, 4, 1, 1)
 
         main_layout = QVBoxLayout()
-
         main_layout.addWidget(self.keywords_list)
-        main_layout.addLayout(button_layout)
+        main_layout.addLayout(self.keyword_layout)
+        main_layout.addLayout(self.button_layout)
 
         self.setLayout(main_layout)
-
-    def save_and_close(self):
-        print("zapisz")
-        # edited_text = self.text_edit.toPlainText()
-        # print("Zapisano tekst:", edited_text)
-        # self.accept()
-
-    def get_keywords_from_file(self):
-        words_list = []
-        with open("KEYWORDS.txt", "r") as f:
-            lines = f.readlines()
-            for line in lines:
-                words = line.split(";")
-                for word in words:
-                    words_list.append(word.strip())
-        return words_list
-
-
-class KeywordsTable(QTableWidget):
-    def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
-        self.words = self.parent.keywords
-        self.setColumnCount(1)
-        self.setAlternatingRowColors(True)
-        self.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.horizontalHeader().hide()
-        self.verticalHeader().hide()
-
-        for i, word in enumerate(self.words):
-            self.insertRow(i)
-            item = QTableWidgetItem(word)
-            print(item)
-            self.setItem(0, i, item)
 
 
 class KeywordsList(QListWidget):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
+        self.keywords_txt_dir = "KEYWORDS.txt"
 
-        self.words = self.parent.keywords
-
-        for word in self.words:
-            item = QListWidgetItem(word)
-            self.addItem(item)
-
+        self.keywords = self.get_keywords_from_file()
         self.setAlternatingRowColors(True)
-        self.itemDoubleClicked.connect(self.editItem)
-        # self.itemClicked.connect(self.on_list_item_clicked)
 
-    # def on_list_item_clicked(self, item):
-    #     if not item.text():  # Sprawdzenie, czy wybrany element jest pusty
-    #         self.list_widget.editItem(item)
-
-    def edit_item(self, item):
-        index = self.row(item)
-        edit = QLineEdit(item.text())
-        self.setItemWidget(item, edit)
-        edit.editingFinished.connect(lambda: self.update_item(index, edit))
-        self.extract_items()
+        for word in self.keywords:
+            item = QListWidgetItem(word)
+            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            self.addItem(item)
 
     def extract_items(self):
         items = []
         for x in range(self.count()):
             items.append(self.item(x).text())
-        print(items)
+        return items
 
-    def update_item(self, index, edit):
-        item = self.item(index)
-        item.setText(edit.text())
-        self.setItemWidget(item, None)
-        edit.deleteLater()
+    def add_keyword_to_list(self):
+        new_word = self.parent.text_box.text()
+        if new_word != "":
+            item = QListWidgetItem(new_word)
+            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            self.addItem(item)
+        self.parent.text_box.clear()
+
+    def save_keywords(self):
+        words = self.extract_items()
+        with open(self.keywords_txt_dir, "w") as f:
+            for word in words:
+                if word != "":
+                    f.writelines(word + "\n")
+        self.parent.close()
+
+    def get_keywords_from_file(self):
+        words_list = []
+        with open(self.keywords_txt_dir, "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                if line != "":
+                    words_list.append(line.strip())
+        return words_list
