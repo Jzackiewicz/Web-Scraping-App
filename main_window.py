@@ -12,7 +12,8 @@ from table_box import ClickableTable
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Org")
+        self.setWindowIcon(QIcon('OB.ico'))
+        self.setWindowTitle("Filtrowanie Ogłoszeń")
         self.setGeometry(200, 200, 900, 400)
 
         self.bold_font = QFont()
