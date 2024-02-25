@@ -1,1 +1,1 @@
-Trafo; transformator; przepusty
+trafo; transformator; przepusty; test; Lorem; Ipsum
