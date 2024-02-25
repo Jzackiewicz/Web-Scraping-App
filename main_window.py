@@ -3,8 +3,8 @@ import sys
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-import page_scraping
 import exceptions
+import page_scraping
 from keywords_window import KeyWordsEditWindow
 from table_box import ClickableTable
 
@@ -13,7 +13,7 @@ class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Org")
-        self.setGeometry(100, 100, 900, 400)
+        self.setGeometry(200, 200, 900, 400)
 
         self.bold_font = QFont()
         self.bold_font.setBold(True)
@@ -33,7 +33,7 @@ class MyWindow(QMainWindow):
         # Ustawienie layoutu
         self.main_layout = QGridLayout()
         self.main_layout.addWidget(self.url_input, 0, 0, 1, 5)
-        self.main_layout.addWidget(self.send_button, 1, 0, 1, 3)
+        self.main_layout.addWidget(self.send_button, 1, 0, 1, 4)
         self.main_layout.addWidget(self.keywords_button, 1, 4, 1, 1)
         self.main_layout.addWidget(self.table, 2, 0, 6, 5)
 
@@ -42,7 +42,6 @@ class MyWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         # Po kliknięciu przycisku "Wyślij"
-
 
     def on_click_send_button(self):
         url = self.url_input.text()
@@ -59,7 +58,6 @@ class MyWindow(QMainWindow):
     def on_click_keywords_button(self):
         keywords_edit_window = KeyWordsEditWindow(self)
         keywords_edit_window.exec()
-
 
 
 if __name__ == "__main__":

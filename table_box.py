@@ -13,6 +13,7 @@ class ClickableTable(QTableWidget):
         self.setEditTriggers(QTableWidget.NoEditTriggers)
         self.setColumnCount(3)
         self.setAlternatingRowColors(True)
+        self.horizontalHeader().hide()
         self.clicked.connect(self.on_click)
 
         self.click_time = 0
