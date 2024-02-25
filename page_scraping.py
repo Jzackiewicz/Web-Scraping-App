@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-class Ogloszenie():
+class SingleAd:
     def __init__(self, numer, organizator, nazwa, termin, adres, link):
         self.numer = numer
         self.organizator = organizator
@@ -45,13 +45,43 @@ def scrape_page(url):
             lok = lines[4].text.strip().replace("\n", "").strip()
             url = cell.find("a")['href']
 
-            ogl = Ogloszenie(nr, org, dan, ter, lok, url)
+            ogl = SingleAd(nr, org, dan, ter, lok, url)
             przetargi.append(ogl)
 
     return przetargi
 
 
+def get_keywords():
+    words_list = []
+    with open("KEYWORDS.txt", "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            words = line.split(";")
+            for word in words:
+                words_list.append(word.strip())
+    return words_list
+
+
+def filter_ads(ads):
+    words_list = get_keywords()
+    wynik = []
+    for phrase in ads:
+        for word in words_list:
+            print(word, phrase.nazwa)
+            if word in phrase.nazwa:
+                wynik.append(phrase.nazwa)
+                break
+    return wynik
+
+
+class ScrapedPage:
+    def __init__(self, url):
+        self.url = url
+        self.ads = scrape_page(self.url)
+
+
 if __name__ == '__main__':
     offers = scrape_page(
         'https://www.oferty-biznesowe.pl/powiadomienia/pokaz/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjbGllbnQiOjI1ODU4OCwibm90aWZpY2F0aW9uIjozNzk1MjIsImtleSI6IjIwMjQtMDEtMzEtMS0xNy0xMCIsImV4cCI6MTcwOTMxMTYzMX0.CWarsdb5b-P8Fm4OHIlTUQw4pbIcwW7M2ZUuI8WWZk8')
-    print(offers)
+    # print(offers)
+    print(filter_ads(offers))
