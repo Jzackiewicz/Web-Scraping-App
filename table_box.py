@@ -34,6 +34,7 @@ class ClickableTable(QTableWidget):
         webbrowser.open(url, new=0, autoraise=True)
 
     def update_table(self):
+        self.setRowCount(0)
         for i, offer in enumerate(self.parent.data):
             self.insertRow(i)
             self.setRowHeight(i, 40)
